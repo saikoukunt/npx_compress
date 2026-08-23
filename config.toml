@@ -1,0 +1,7 @@
+manifest_dir = "./tmp/manifests/"
+
+[pack]
+input_paths = ["./tmp/pack-in/"]
+
+[unpack]
+input_paths = ["./tmp/unpack-in/"]
