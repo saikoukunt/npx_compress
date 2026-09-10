@@ -1,0 +1,40 @@
+# Every option npx-compress understands, with its default value.
+# Copy this file, delete what you don't need, and pass it with --config-path.
+
+manifest_dir = "."                          # holds npx_pack.manifest / npx_unpack.manifest
+
+
+[backend]
+name = "wavpack"                            # which compression tool to drive
+
+
+# Per-backend settings live in [backend.<name>]. Only the selected backend is read,
+# so settings for the others can stay in the file.
+[backend.wavpack]
+# executable = "wavpack"                    # compressor, if not on PATH under this name
+# decoder = "wvunpack"                      # decompressor + verifier
+compress_options = ["--pair-unassigned-chans", "--threads=12"]
+decompress_options = ["--threads=12"]
+verify_options = []                         # extra flags for the wvunpack -v check
+# --raw-pcm-ex=<imSampRate>,16s,<nSavedChans>,le is always added from the .meta file,
+# don't set it here
+
+
+[pack]
+input_paths = ["./tmp/pack-in/"]            # files or folders to compress
+file_extension = "ap.bin"                   # which files in those folders to pick up
+# output_dir = "./tmp/pack-out/"            # omit to write beside the input files
+override = false                            # true = recompress files already in the manifest
+verify = false                              # true = decode each file again to check it
+dry_run = false                             # true = list the files to compress and stop
+include_strings = []                        # if set, only paths containing one of these
+
+
+[unpack]
+input_paths = ["./tmp/unpack-in/"]
+file_extension = ".wv"
+# output_dir = "./tmp/unpack-out/"
+override = false
+verify = false
+dry_run = false
+include_strings = []

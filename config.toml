@@ -1,5 +1,12 @@
 manifest_dir = "./tmp/manifests/"
 
+[backend]
+name = "wavpack"
+
+[backend.wavpack]
+compress_options = ["--pair-unassigned-chans", "--threads=12", "-v"]
+decompress_options = ["--threads=12", "-v"]
+
 [pack]
 input_paths = ["./tmp/pack-in/"]
 

@@ -1,20 +1,18 @@
+import shutil
 from pathlib import Path
 
 import pandas as pd
 
 from npx_compress.path_utils import convert_bin_path_to_meta
 
-# imDatPrb_type values, https://billkarsh.github.io/SpikeGLX/Sgl_help/Metadata_Help.html
 PROBE_TYPES = {
     "0": "NP1.0",
     "21": "NP2.0 (1-shank)",
     "24": "NP2.0 (4-shank)",
 }
 
-# meta keys we read
 META_FIELDS = ("nSavedChans", "imSampRate", "fileTimeSecs", "fileSizeBytes")
 
-# columns of the frames returned below, in order
 SGLX_COLUMNS = ("binFile", *META_FIELDS, "probeType", "recordingTime")
 
 
@@ -58,12 +56,20 @@ def read_sglx_meta_file(bin_path: str | Path) -> pd.DataFrame:
     )
 
 
+def copy_meta_file(bin_path: Path, out_path: Path) -> None:
+    """Keep a compressed file's meta beside it when it isn't written in place."""
+    meta_path = convert_bin_path_to_meta(bin_path)
+    out_meta_path = convert_bin_path_to_meta(out_path)
+    if out_meta_path != meta_path:
+        shutil.copy2(meta_path, out_meta_path)
+
+
 def get_probe_type(raw: dict[str, str]) -> str:
     """Resolve the probe type across meta file versions."""
     if "imDatPrb_type" in raw:
         code = raw["imDatPrb_type"]
         return PROBE_TYPES.get(code, f"unknown (imDatPrb_type={code})")
-    if "imProbeOpt" in raw:  # phase3A probes predate imDatPrb_type
+    if "imProbeOpt" in raw:
         return f"NP1.0 phase3A (option {raw['imProbeOpt']})"
     return "unknown"
 
